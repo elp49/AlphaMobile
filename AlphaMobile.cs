@@ -14,8 +14,8 @@ namespace AlphaMobile
 
 		public abstract string GetModel();
 
-		public void Assemble() {
-			Console.WriteLine("{0} being assembled.", GetModel());
+		public void Assemble(string location) {
+			Console.WriteLine("{0} being assembled in {1}.", GetModel(), location);
 		}
 
 		public void SetLabel(string label) {
@@ -59,11 +59,24 @@ namespace AlphaMobile
 
 	abstract class BaseSmartphoneFactory
 	{
+		public static BaseSmartphoneFactory GetSmartphoneFactory(string location) {
+			switch (location.ToLower()) {
+				case "singapore":
+					return new SingaporeSmartphoneFactory();
+
+				case "new york":
+					return new NewYorkSmartphoneFactory();
+
+				default:
+					throw new ArgumentException(string.Format("{0} is not a valid location", location), "location");
+			}
+		}
+
 		public abstract Smartphone CreateSmartphone(string type, string label, double price);
 	}
 
 
-	class SmartphoneFactory : BaseSmartphoneFactory
+	class SingaporeSmartphoneFactory : BaseSmartphoneFactory
 	{
 		public override Smartphone CreateSmartphone(string type, string label, double price) {
 			Smartphone smartphone;
@@ -77,6 +90,33 @@ namespace AlphaMobile
 					break;
 
 				case "smart6":
+					throw new ArgumentException(string.Format("Singapore does not produce the {0} smartphone model.", type), "type");
+
+				default:
+					throw new ArgumentException(string.Format("{0} is not a valid type of smartphone", type), "type");
+			}
+
+			smartphone.Assemble("Singapore");
+			smartphone.SetLabel(label);
+			smartphone.SetPrice(price);
+			return smartphone;
+		}
+	}
+
+
+	class NewYorkSmartphoneFactory : BaseSmartphoneFactory
+	{
+		public override Smartphone CreateSmartphone(string type, string label, double price) {
+			Smartphone smartphone;
+			switch (type.ToLower()) {
+				case "smart4":
+					throw new ArgumentException(string.Format("New York does not produce the {0} smartphone model.", type), "type");
+
+				case "smart5":
+					smartphone = new Smart5();
+					break;
+
+				case "smart6":
 					smartphone = new Smart6();
 					break;
 
@@ -84,7 +124,7 @@ namespace AlphaMobile
 					throw new ArgumentException(string.Format("{0} is not a valid type of smartphone", type), "type");
 			}
 
-			smartphone.Assemble();
+			smartphone.Assemble("New York");
 			smartphone.SetLabel(label);
 			smartphone.SetPrice(price);
 			return smartphone;
